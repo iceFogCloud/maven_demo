@@ -113,7 +113,7 @@
             });
 
         });
-        
+        //登陆页面
         function login(){
         	var user_name = $("#user_name").val();
         	var user_password = $("#user_password").val();
