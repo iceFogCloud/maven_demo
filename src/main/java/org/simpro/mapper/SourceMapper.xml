@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="org.simpro.dao.SourceMapper" >  
+	
+ 	<!-- 获取资源列表数目 -->
+ 	<select id="getSourceListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+	 	SELECT COUNT(1)
+		FROM system_source T
+		WHERE 1=1 
+		<if test="source_name != null and source_name !=''">
+			AND	T.source_name LIKE CONCAT('%',#{source_name,jdbcType=VARCHAR},'%' ) 
+		</if> 
+ 	</select>
+ 	
+ 	<!-- 获取资源列表信息 -->
+ 	<select id="getSourceList" parameterType="java.util.Map" resultType="java.util.Map">
+	 	SELECT T.id AS id,
+				T.id AS sourceId,
+				 T.source_name AS source_name,
+					T.source_url AS source_url,
+				T1.id AS sourcePid,
+				T1.source_name AS source_nameP
+		FROM system_source T
+		LEFT JOIN system_source T1 ON T.source_pId = T1.id
+		WHERE 1=1 
+		<if test="source_name != null and source_name !=''">
+			AND	T.source_name LIKE CONCAT('%',#{source_name,jdbcType=VARCHAR},'%' ) 
+		</if> 
+		ORDER BY T.source_order ASC
+		LIMIT #{curNum,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+ 	</select>
+ 	
+ 	<!-- 获取资源下拉列表信息 -->
+	<select id="getSourceSelectList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT 	T.id AS id,
+				T.id AS sourceId,
+				T.source_name AS source_name,
+				T.source_url AS source_url,
+				T1.id AS sourcePid,
+				T1.source_name AS source_nameP
+		FROM system_source T
+		LEFT JOIN system_source T1 ON T.source_pId = T1.id
+		ORDER BY T.source_order ASC
+	</select>
+	
+	<!-- 插入用户资源信息 -->
+	<insert id="insertSourceInfo" parameterType="java.util.Map"  useGeneratedKeys="true" keyProperty="id">
+		 insert into system_source
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="source_name != null and source_name != ''  " >
+	        source_name,
+	      </if>
+	      <if test="source_url != null and source_url != '' " >
+	        source_url,
+	      </if>
+	      <if test="create_time != null and create_time != '' " >
+	        create_time,
+	      </if>
+	      <if test="update_time != null and update_time !='' " >
+	        update_time,
+	      </if>
+	      <if test="source_pId != null and source_pId !=''" >
+	        source_pId,
+	      </if> 
+	      <if test="source_icon != null and source_icon !=''" >
+	        source_icon,
+	      </if> 
+	      <if test="source_order != null and source_order !=''" >
+	        source_order,
+	      </if> 
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="source_name != null and source_name != ''  " >
+	        #{source_name,jdbcType=VARCHAR},
+	      </if>
+	       <if test="source_url != null and source_url != '' " >
+	        #{source_url,jdbcType=VARCHAR},
+	      </if>
+	       <if test="create_time != null and create_time != '' " >
+	        #{create_time,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="update_time != null and update_time != '' " >
+	        #{update_time,jdbcType=TIMESTAMP},
+	      </if>
+	       <if test="source_pId != null and source_pId != '' " >
+	        #{source_pId,jdbcType=INTEGER},
+	      </if>
+	       <if test="source_icon != null and source_icon !='' " >
+	        #{source_icon,jdbcType=VARCHAR},
+	      </if>
+	       <if test="source_order != null and source_order !='' " >
+	        #{source_order,jdbcType=INTEGER},
+	      </if>
+	    </trim>
+	</insert>
+	
+	<!-- 获取资源信息 -->
+	<select id="getSourceInfo" parameterType="java.util.Map" resultType="java.util.Map">
+	SELECT 
+				T.id AS id,
+				T.id AS sourceId,
+				T.source_icon AS source_icon,
+				T.source_name AS source_name,
+				T.source_order AS source_order,
+				T.source_pId AS source_pId,
+				T.source_url AS source_url
+	FROM system_source T
+	WHERE T.id = #{id,jdbcType=INTEGER} 
+	</select>
+	
+	<!-- 更新资源信息 -->
+	<update id="updateSourceInfo" parameterType="java.util.Map">
+		update system_source
+	    <set >
+	      <if test="source_icon != null" >
+	        source_icon = #{source_icon,jdbcType=VARCHAR},
+	      </if>
+	      <if test="source_name != null" >
+	        source_name = #{source_name,jdbcType=VARCHAR},
+	      </if>
+	      <if test="source_order != null" >
+	        source_order = #{source_order,jdbcType=INTEGER},
+	      </if>
+	      <if test="source_pId != null" >
+	        source_pId = #{source_pId,jdbcType=INTEGER},
+	      </if>
+	      <if test="source_url != null" >
+	        source_url = #{source_url,jdbcType=VARCHAR},
+	      </if>
+	      <if test="update_time != null" >
+	        update_time = #{update_time,jdbcType=TIMESTAMP},
+	      </if>
+	    </set>
+	    where id = #{sourceId,jdbcType=INTEGER}
+	</update>
+	
+</mapper>  

@@ -28,6 +28,7 @@ public class LoginFilter implements Filter {
 		
 		if(session.getAttribute("LOGIN_USER")==null && request.getRequestURI().indexOf("/system/login.do") == -1){
 			// 没有登录
+			
 			response.sendRedirect(request.getContextPath()+"/system/login.do");
 		}else{
 			// 已经登录，继续请求下一级资源（继续访问）

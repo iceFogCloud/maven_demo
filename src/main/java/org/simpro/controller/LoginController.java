@@ -66,6 +66,7 @@ public class LoginController extends BaseController {
 		}else {
 			HttpSession hs = request.getSession();
 			hs.setAttribute("LOGIN_USER", customer.get("user_name"));
+			hs.setAttribute("userId", customer.get("userId"));
 			resMap.put("resCode", 200);
 			resMap.put("resMsg", "success");
 			resMap.put("redirectUrl", "/loginController/toLoginIndex.do");
@@ -90,8 +91,24 @@ public class LoginController extends BaseController {
 	@RequestMapping(value="/toLoginIndex")
 	public String toLoginIndex(HttpServletRequest request,HttpServletResponse response,Model model) {
 		String url = "/view/manage/index";
-		HttpSession hs = request.getSession();
-		System.out.println(hs.getAttribute("LOGIN_USER"));
+		model.addAttribute("basePath",request.getContextPath());
+		return url;
+	}
+	
+	/**
+	 * 欢迎首页
+	 * yan_zhx 
+	 * 2019年6月13日 下午2:16:16 
+	 * TODO(这里用一句话描述这个方法的作用)   
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return    设定文件   
+	 * String    返回类型
+	 */
+	@RequestMapping(value="/welcomeIndex")
+	public String welcomeIndex(HttpServletRequest request,HttpServletResponse response,Model model) {
+		String url = "/view/manage/welcome";
 		model.addAttribute("basePath",request.getContextPath());
 		return url;
 	}

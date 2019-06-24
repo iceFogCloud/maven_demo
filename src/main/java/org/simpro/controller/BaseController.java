@@ -2,6 +2,7 @@ package org.simpro.controller;
 
 
 import org.apache.log4j.Logger;
+import org.simpro.utils.DateUtil;
  
  
 public class BaseController {
@@ -26,6 +27,10 @@ public class BaseController {
 	public static void logAfter(Logger logger){
 		logger.info("end");
 		logger.info("");
+	}
+	
+	public static void LOGGER(Logger logger,String methodName, String errorMsg) {
+		logger.error("方法名："+methodName+",错误信息："+errorMsg+",当前时间："+DateUtil.getTime());
 	}
 	
 }

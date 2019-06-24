@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="org.simpro.dao.RbacMapper" >  
+	
+	<!-- 获取用户权限信息 -->
+	<select id="getUserRbacInfo" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT T6.id AS id,
+				T6.source_name AS name,
+				T6.source_name AS text,
+				T6.source_icon AS icon,
+				T6.source_pId AS source_pId,
+				T6.source_url AS url,
+				T6.source_order AS source_order
+		FROM system_user T
+		LEFT JOIN system_user_role T1 ON T1.userId = T.id
+		LEFT JOIN system_role T2 ON T2.id = T1.roleId
+		LEFT JOIN system_role_source T3 ON T3.roleId = T2.id 
+		LEFT JOIN system_source T6 ON T6.id = T3.sourceId
+		WHERE  T.id = #{userId,jdbcType=VARCHAR}
+		ORDER BY T6.source_order ASC
+	</select>
+	
+	<!-- 获取用户权限信息 -->
+	<select id="getUserRbacInfoTree" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT T6.id AS id,
+				T6.source_name AS name,
+				T6.source_name AS text,
+				T6.source_icon AS icon,
+				T6.source_pId AS source_pId,
+				T6.source_url AS url,
+				T6.source_order AS source_order
+		FROM  system_source T6  
+		ORDER BY T6.source_order ASC
+	</select>
+	
+	<!-- 获取角色信息 -->
+	<select id="getRbacListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT 	COUNT(1)
+		FROM system_role T
+		WHERE 1=1
+		<if test="role_name != null and role_name !=''">
+			AND	T.role_name LIKE CONCAT('%',#{role_name,jdbcType=VARCHAR},'%' ) 
+		</if> 
+		<if test="role_state != null and role_state !=''">
+			AND T.role_state = #{role_state,jdbcType=INTEGER}
+		</if> 
+	</select>
+	
+	<!-- 获取角色信息 -->
+	<select id="getRbacList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT 	T.id AS id,
+					T.id AS rbacId,
+					T.role_name AS role_name,
+					T.role_state AS role_state,
+					DATE_FORMAT(T.update_time,'%Y-%m-%d') AS update_time
+		FROM system_role T
+		WHERE 1=1
+		<if test="role_name != null and role_name !=''">
+			AND	T.role_name LIKE CONCAT('%',#{role_name,jdbcType=VARCHAR},'%' ) 
+		</if> 
+		<if test="role_state != null and role_state !=''">
+			AND T.role_state = #{role_state,jdbcType=INTEGER}
+		</if> 
+		ORDER BY T.id ASC
+		LIMIT #{curNum,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 插入权限信息 -->
+	<insert id="insertRbacInfo" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+  
+  	insert into system_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="role_name != null and role_name != ''  " >
+        role_name,
+      </if>
+      <if test="role_state != null " >
+        role_state,
+      </if>
+      <if test="create_time != null and create_time != '' " >
+        create_time,
+      </if>
+      <if test="update_time != null and update_time !='' " >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="role_name != null and role_name != ''  " >
+        #{role_name,jdbcType=VARCHAR},
+      </if>
+       <if test="role_state != null " >
+        #{role_state,jdbcType=INTEGER},
+      </if>
+       <if test="create_time != null and create_time != '' " >
+        #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_time != null and update_time != '' " >
+        #{update_time,jdbcType=TIMESTAMP},
+      </if> 
+    </trim>
+	</insert>
+	
+	
+	<!-- 批量插入批次信息 -->
+	<insert id="batchInsertRbacSourceMatch" >
+		INSERT INTO system_role_source(
+				roleId,
+				sourceId
+		)VALUES
+		<foreach collection="list" index="key"  item="item" separator=",">
+			(<if test="item.roleId != null and item.roleId !='' ">
+				#{item.roleId,jdbcType=INTEGER},
+			</if>
+			<if test="item.sourceId != null and item.sourceId != '' ">
+				#{item.sourceId,jdbcType=INTEGER}
+			</if>   )
+	   	</foreach>
+	</insert>
+	
+	<!-- 获取角色列表信息 -->
+	<select id="getRoleSelectList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+					T.id AS id,
+					T.role_name AS role_name
+		FROM system_role T
+	</select>
+	
+	<!-- 获取用户角色信息 -->
+	<select id="getRoleInfoByKey" parameterType="java.util.Map" resultType="java.util.Map">
+	SELECT T.id AS id,
+				T.id AS roleId,
+				T.role_name AS role_name,
+				TT.sourceIds AS sourceIds
+	FROM system_role T
+	LEFT JOIN (SELECT T1.roleId AS roleId,GROUP_CONCAT(T1.sourceId) AS sourceIds FROM system_role_source T1 GROUP BY T1.roleId) TT ON TT.roleId = T.id
+	WHERE T.id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 更新角色信息 -->
+	<update id="updateRbacInfo" parameterType="java.util.Map">
+		update system_role
+	    <set >
+	      <if test="role_name != null" >
+	        role_name = #{role_name,jdbcType=VARCHAR},
+	      </if>
+	      <if test="update_time != null" >
+	        update_time = #{update_time,jdbcType=TIMESTAMP},
+	      </if>
+	    </set>
+	    where id = #{roleId,jdbcType=INTEGER}
+	</update>
+	
+ 	<!-- 删除用户关联信息 -->
+  <delete id="deleteRbacSourceMatch" >
+    DELETE FROM system_role_source
+    where roleId = #{roleId,jdbcType=INTEGER}
+  </delete>
+</mapper>  

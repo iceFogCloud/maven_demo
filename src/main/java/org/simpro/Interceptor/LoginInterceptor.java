@@ -28,7 +28,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 		HttpSession session = request.getSession();
 		String uri = request.getRequestURI(); // 获取登录的uri，这个是不进行拦截的
 		
-		if(session.getAttribute("LOGIN_USER")!=null || uri.indexOf("system/login.do")!=-1 || uri.endsWith(".png") || uri.endsWith(".js") || uri.endsWith(".css") || uri.endsWith(".jpg")) {// 说明登录成功 或者 执行登录功能			
+		if(session.getAttribute("LOGIN_USER")!=null || uri.indexOf("system/login.do")!=-1 || uri.endsWith(".png") || uri.endsWith(".js") || uri.endsWith(".css") || uri.endsWith(".jpg")|| uri.endsWith(".gif")) {// 说明登录成功 或者 执行登录功能			
 		//if(session.getAttribute("LOGIN_USER")!=null) {
 			// 登录成功不拦截
 			return true;
